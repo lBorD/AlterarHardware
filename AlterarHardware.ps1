@@ -1,3 +1,6 @@
+Write-Host ".............................."
+Write-Host "Altera Hardware v1.0 by BorD.."
+Write-Host ".............................."
 # Função para exibir um menu e obter a escolha do usuário
 function Show-Menu {
     param (
@@ -46,23 +49,33 @@ $processorBaseKeyPath = "HKLM:\SYSTEM\ControlSet001\Enum\ACPI\AuthenticAMD_-_AMD
 $gpuBaseKeyPath = "HKLM:\SYSTEM\ControlSet001\Control\Video\{39176416-9601-11ED-836A-806E6F6E6963}"
 
 # Atualiza os nomes dos processadores
-for ($i = 0; $i -le 5; $i++) {
+for ($i = 0; $i -le 99; $i++) {
     $processorKeyPath = "$processorBaseKeyPath\$i"
     if (Test-Path $processorKeyPath) {
-        Set-ItemProperty -Path $processorKeyPath -Name "FriendlyName" -Value $newProcessorName
-        Write-Host "Nome do processador $i atualizado para $newProcessorName."
+        try {
+            Set-ItemProperty -Path $processorKeyPath -Name "FriendlyName" -Value $newProcessorName
+            Write-Host "Nome do processador $i atualizado para $newProcessorName."
+        } catch {
+            Write-Host "Erro ao tentar atualizar o nome do processador $i"
+        }
     } else {
         Write-Host "Caminho do processador $i não encontrado: $processorKeyPath"
     }
 }
 
-# Atualiza os nomes das GPUs
-for ($j = 0; $j -le 4; $j++) {
-    $gpuKeyPath = "$gpuBaseKeyPath\000$j"
+# Iterar sobre as possíveis subchaves da GPU e atualiza os nomes
+for ($i = 0; $i -le 99; $i++) {
+    $gpuKeyPath = "$gpuBaseKeyPath\000$i"
+    
+    # Verifica se o caminho da GPU existe
     if (Test-Path $gpuKeyPath) {
-        Set-ItemProperty -Path $gpuKeyPath -Name "DriverDesc" -Value $newGpuName
-        Write-Host "Nome da GPU $j atualizado para $newGpuName."
+        try {
+            Set-ItemProperty -Path $gpuKeyPath -Name "DriverDesc" -Value $newGpuName
+            Write-Host "Nome da GPU $i atualizado para $newGpuName."
+        } catch {
+            Write-Host "Erro ao tentar atualizar o nome da GPU $i "
+        }
     } else {
-        Write-Host "Caminho da GPU $j não encontrado: $gpuKeyPath"
+        # Caminho da GPU não encontrado, não faz nada e não exibe mensagem
     }
 }
